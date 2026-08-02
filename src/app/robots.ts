@@ -7,8 +7,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // /go/* are tracked redirects and /stats is private; neither belongs in an
-      // index, and crawling /go/* would inflate click counts.
+
       disallow: ["/go/", "/stats", "/api/"],
     },
     sitemap: `${siteUrl}/sitemap.xml`,

@@ -1,22 +1,8 @@
-# ---------------------------------------------------------------------------
-# Linkfile with the file click store — no database required.
-#
-#   docker compose up -d --build
-#
-# Clicks are appended to /app/.data/clicks.log inside the container, which is
-# backed by the named `linkfile-data` volume so they survive rebuilds.
-#
-# To use PostgreSQL instead, uncomment the `db` service and the two commented
-# environment lines below.
-# ---------------------------------------------------------------------------
-
 services:
   linkfile:
     build:
       context: .
       args:
-        # Baked into the build: canonical URLs and social previews use it.
-        # Change this to your real domain before building.
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
     image: linkfile
     container_name: linkfile
@@ -27,33 +13,10 @@ services:
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
       CLICK_STORE: file
       CLICK_LOG_PATH: /app/.data/clicks.log
-      # Leave both blank and /stats stays inaccessible.
       STATS_USERNAME: ${STATS_USERNAME:-}
       STATS_PASSWORD: ${STATS_PASSWORD:-}
-      # CLICK_STORE: postgres
-      # DATABASE_URL: postgres://linkfile:linkfile@db:5432/linkfile
     volumes:
       - linkfile-data:/app/.data
-    # depends_on:
-    #   db:
-    #     condition: service_healthy
-
-  # db:
-  #   image: postgres:17-alpine
-  #   container_name: linkfile-db
-  #   restart: unless-stopped
-  #   environment:
-  #     POSTGRES_USER: linkfile
-  #     POSTGRES_PASSWORD: linkfile
-  #     POSTGRES_DB: linkfile
-  #   volumes:
-  #     - linkfile-db:/var/lib/postgresql/data
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U linkfile"]
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 10
 
 volumes:
   linkfile-data:
-  # linkfile-db:

@@ -1,12 +1,5 @@
 import type { SVGProps } from "react";
 
-/**
- * Inline SVG icons.
- *
- * Inlined rather than fetched so there is no extra request, no icon font and no
- * flash of missing glyphs. All are decorative: callers keep `aria-hidden`.
- */
-
 type IconProps = SVGProps<SVGSVGElement>;
 
 const base = {
@@ -37,10 +30,6 @@ export function LocationPin(props: IconProps) {
   );
 }
 
-/**
- * The Linkfile mark: a document sheet with a link node cut through it —
- * "your links, one file".
- */
 export function LinkfileMark(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" {...base} {...props}>

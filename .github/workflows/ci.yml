@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-# A newer push to the same branch cancels an in-flight run.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true

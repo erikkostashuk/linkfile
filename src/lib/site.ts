@@ -1,13 +1,10 @@
-/** Fallback used when `NEXT_PUBLIC_SITE_URL` is not set. */
 export const DEFAULT_SITE_URL = "http://localhost:3000";
 
-/**
- * Normalises a configured origin: trims whitespace and removes any trailing
- * slash so `${siteUrl}/stats` never produces a double slash.
- *
- * Falls back to localhost for missing or unparseable input rather than throwing,
- * because a bad canonical URL should not take a profile page offline.
- */
+export type SiteUrlEnvironment = {
+  NEXT_PUBLIC_SITE_URL?: string | undefined;
+  VERCEL_PROJECT_PRODUCTION_URL?: string | undefined;
+};
+
 export function normalizeSiteUrl(value: string | undefined): string {
   const trimmed = value?.trim();
 
@@ -23,8 +20,20 @@ export function normalizeSiteUrl(value: string | undefined): string {
   }
 }
 
-/** Canonical public origin of this deployment, without a trailing slash. */
-export const siteUrl = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
+export function resolveSiteUrl(env: SiteUrlEnvironment): string {
+  if (env.NEXT_PUBLIC_SITE_URL?.trim()) {
+    return normalizeSiteUrl(env.NEXT_PUBLIC_SITE_URL);
+  }
 
-/** Repository URL, shown in the footer and used for "Built with Linkfile". */
+  const vercelProductionDomain = env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  return normalizeSiteUrl(
+    vercelProductionDomain ? `https://${vercelProductionDomain}` : undefined,
+  );
+}
+
+export const siteUrl = resolveSiteUrl({
+  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  VERCEL_PROJECT_PRODUCTION_URL: process.env.VERCEL_PROJECT_PRODUCTION_URL,
+});
+
 export const REPOSITORY_URL = "https://github.com/erikkostashuk/linkfile";

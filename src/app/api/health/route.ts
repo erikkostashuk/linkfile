@@ -4,14 +4,6 @@ import { config } from "@/lib/config";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/**
- * Liveness endpoint for uptime monitors, container health checks and reverse
- * proxies.
- *
- * Reports *which* click store is active and whether it persists, but never the
- * connection string, log path or credentials — enough to diagnose a
- * misconfiguration without handing an attacker infrastructure details.
- */
 export async function GET(): Promise<Response> {
   let clicks: { store: string; persistent: boolean; reason?: string };
 
@@ -26,7 +18,10 @@ export async function GET(): Promise<Response> {
     clicks = {
       store: "misconfigured",
       persistent: false,
-      reason: error instanceof Error ? error.message : "Unknown click store configuration error",
+      reason:
+        error instanceof Error
+          ? error.message
+          : "Unknown click store configuration error",
     };
   }
 

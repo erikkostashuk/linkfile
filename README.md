@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/preview.png" alt="Linkfile — a link-in-bio page shown in light and dark themes" width="900">
+<img src="docs/preview.png" alt="Linkfile — a clean, light-themed link-in-bio page" width="900">
 
 # Linkfile
 
@@ -10,7 +10,7 @@ Linkfile is an open-source link-in-bio page configured from one JSON file and de
 
 [![CI](https://github.com/erikkostashuk/linkfile/actions/workflows/ci.yml/badge.svg)](https://github.com/erikkostashuk/linkfile/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-1d4ed8.svg)](LICENSE)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ferikkostashuk%2Flinkfile&env=NEXT_PUBLIC_SITE_URL,STATS_USERNAME,STATS_PASSWORD,CLICK_STORE,DATABASE_URL&envDescription=Public%20origin%2C%20%2Fstats%20credentials%20and%20click%20storage&envLink=https%3A%2F%2Fgithub.com%2Ferikkostashuk%2Flinkfile%23environment-variables&project-name=linkfile&repository-name=linkfile)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ferikkostashuk%2Flinkfile&project-name=linkfile&repository-name=linkfile)
 
 </div>
 
@@ -34,7 +34,7 @@ wants a JSON file.
 | | |
 |---|---|
 | **Profile page** | Avatar, name, handle, bio, optional location and an ordered list of link rows |
-| **Themes** | Automatic light and dark via `prefers-color-scheme`, themed by one accent colour |
+| **Theme** | A polished light theme personalized by one configurable accent colour |
 | **Validation** | Zod-checked config with a JSON Schema for editor autocomplete; a bad file fails the build |
 | **Click tracking** | First-party `/go/<slug>` redirects into a file log or PostgreSQL |
 | **Statistics** | Password-protected `/stats` with totals, 7/30-day windows and CSS-only bars |
@@ -152,16 +152,16 @@ Copy `.env.example` to `.env.local`. Every value is optional — Linkfile runs w
 
 | Variable | Default | Description |
 |---|---|---|
-| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Public origin, no trailing slash. Used for canonical URLs, Open Graph tags, `robots.txt` and `sitemap.xml` |
+| `NEXT_PUBLIC_SITE_URL` | Vercel production URL, otherwise `http://localhost:3000` | Optional public origin override, no trailing slash. Used for canonical URLs, Open Graph tags, `robots.txt` and `sitemap.xml` |
 | `STATS_USERNAME` | *(unset)* | Basic Auth username for `/stats` |
 | `STATS_PASSWORD` | *(unset)* | Basic Auth password for `/stats` |
 | `CLICK_STORE` | `auto` | `auto`, `file` or `postgres` |
 | `CLICK_LOG_PATH` | `.data/clicks.log` | Where the file store appends clicks |
 | `DATABASE_URL` | *(unset)* | Standard PostgreSQL connection string |
 
-> **`NEXT_PUBLIC_SITE_URL` is read at build time.** Next.js inlines `NEXT_PUBLIC_*` values into the compiled output, and
-> the profile page is statically prerendered. Set it *before* you build, and rebuild after changing it. On Vercel this is
-> automatic; the `Dockerfile` accepts it as `--build-arg`.
+> **`NEXT_PUBLIC_SITE_URL` is read at build time.** Vercel automatically supplies the project's stable production URL
+> when this override is absent, including a connected custom domain. Set it before building only to force a specific
+> origin or when using another host; the `Dockerfile` accepts it as `--build-arg`.
 
 ## Click tracking
 
@@ -274,19 +274,20 @@ Basic Auth sends credentials on every request, so put it behind HTTPS in product
 
 ### Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ferikkostashuk%2Flinkfile&env=NEXT_PUBLIC_SITE_URL,STATS_USERNAME,STATS_PASSWORD,CLICK_STORE,DATABASE_URL&envDescription=Public%20origin%2C%20%2Fstats%20credentials%20and%20click%20storage&envLink=https%3A%2F%2Fgithub.com%2Ferikkostashuk%2Flinkfile%23environment-variables&project-name=linkfile&repository-name=linkfile)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ferikkostashuk%2Flinkfile&project-name=linkfile&repository-name=linkfile)
 
-1. Fork or clone this repository.
-2. Edit `links.json` and replace `public/avatar.svg`.
-3. Import the repository into Vercel.
-4. Set `NEXT_PUBLIC_SITE_URL` to your production URL, e.g. `https://links.example.com`.
-5. Set `STATS_USERNAME` and `STATS_PASSWORD`.
-6. Attach any standard PostgreSQL database (Neon, Supabase, or your own).
-7. Set `DATABASE_URL` to its connection string — most providers need `?sslmode=require`.
-8. Set `CLICK_STORE=postgres`.
-9. Deploy.
+1. Click **Deploy with Vercel** and connect GitHub. No environment variables are required.
+2. Deploy the example as-is, or edit `links.json` and replace `public/avatar.svg` first.
+3. Optionally add a custom domain and redeploy. Vercel will use it automatically; set `NEXT_PUBLIC_SITE_URL` only to
+   force a different canonical origin.
 
-Steps 6–8 are optional, but skipping them means **no click statistics**, and that is deliberate.
+Vercel automatically rebuilds production after every push to `main` and creates previews for other branches.
+
+To enable private click statistics, set `STATS_USERNAME` and `STATS_PASSWORD`, attach any standard PostgreSQL database
+(Neon, Supabase, or your own), set `DATABASE_URL`, and set `CLICK_STORE=postgres`.
+
+Statistics are optional; without that configuration, public links still work and click recording is deliberately
+disabled.
 
 > #### Why a log file is not durable on Vercel
 >
@@ -450,8 +451,8 @@ Look for `[linkfile] /stats is disabled` in the server log.
 **`/stats` shows zeroes on Vercel.** No `DATABASE_URL`, so recording is disabled by design. Attach a PostgreSQL database
 and set `CLICK_STORE=postgres`.
 
-**Canonical URLs and social previews say `localhost`.** `NEXT_PUBLIC_SITE_URL` is read at build time. Set it and rebuild
-— for Docker, pass `--build-arg NEXT_PUBLIC_SITE_URL=...`.
+**Canonical URLs and social previews say `localhost`.** On Vercel, confirm system environment variables are exposed. On
+another host, set `NEXT_PUBLIC_SITE_URL` and rebuild — for Docker, pass `--build-arg NEXT_PUBLIC_SITE_URL=...`.
 
 **Clicks are not recorded on a VPS.** Check that the app's user can write to `CLICK_LOG_PATH`. Failures are logged as
 `[linkfile] Failed to record click`, and the redirect still works, so this is silent from a visitor's point of view.
@@ -481,4 +482,6 @@ Security issues: please read [SECURITY.md](SECURITY.md) rather than opening a pu
 
 ## License
 
-[MIT](LICENSE) © Erik Kostashuk
+Linkfile is released under the [MIT License](LICENSE). You are free to take, use, copy, modify, self-host, publish,
+distribute, sublicense or sell this code, including as part of a commercial product. You do not need to ask permission.
+The only requirement is to keep the copyright and MIT license notice with copies or substantial portions of the code.

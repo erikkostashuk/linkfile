@@ -1,15 +1,7 @@
-/** Accent used when `profile.accent` is omitted from links.json. */
 export const DEFAULT_ACCENT = "#1d4ed8";
 
 export type Rgb = { r: number; g: number; b: number };
 
-/**
- * Expands any accepted hex form (`#rgb`, `#rrggbb`, `#rrggbbaa`) into 0-255
- * channels. Alpha is ignored: it never affects text contrast decisions.
- *
- * Returns `null` for input the schema would already have rejected, so callers
- * can fall back instead of rendering a broken page.
- */
 export function hexToRgb(hex: string): Rgb | null {
   const value = hex.trim().replace(/^#/, "");
 
@@ -34,7 +26,6 @@ export function hexToRgb(hex: string): Rgb | null {
   };
 }
 
-/** WCAG 2.1 relative luminance, 0 (black) to 1 (white). */
 export function relativeLuminance({ r, g, b }: Rgb): number {
   const channel = (raw: number) => {
     const srgb = raw / 255;
@@ -44,7 +35,6 @@ export function relativeLuminance({ r, g, b }: Rgb): number {
   return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
 }
 
-/** WCAG 2.1 contrast ratio between two colours, 1 to 21. */
 export function contrastRatio(a: Rgb, b: Rgb): number {
   const lighter = Math.max(relativeLuminance(a), relativeLuminance(b));
   const darker = Math.min(relativeLuminance(a), relativeLuminance(b));
@@ -55,11 +45,6 @@ export function contrastRatio(a: Rgb, b: Rgb): number {
 const NEAR_WHITE: Rgb = { r: 255, g: 255, b: 255 };
 const NEAR_BLACK: Rgb = { r: 16, g: 16, b: 20 };
 
-/**
- * Picks the text colour to place *on top of* the accent, whichever of near-white
- * or near-black has the higher contrast ratio. This is what keeps a pale accent
- * such as `#fde047` from producing unreadable white-on-yellow.
- */
 export function readableForeground(accent: string): string {
   const rgb = hexToRgb(accent);
 
@@ -67,5 +52,7 @@ export function readableForeground(accent: string): string {
     return "#ffffff";
   }
 
-  return contrastRatio(rgb, NEAR_WHITE) >= contrastRatio(rgb, NEAR_BLACK) ? "#ffffff" : "#101014";
+  return contrastRatio(rgb, NEAR_WHITE) >= contrastRatio(rgb, NEAR_BLACK)
+    ? "#ffffff"
+    : "#101014";
 }

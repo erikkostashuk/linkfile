@@ -4,7 +4,6 @@ import { ClickStoreConfigError } from "./types";
 export const CLICK_STORE_MODES = ["auto", "file", "postgres"] as const;
 export type ClickStoreMode = (typeof CLICK_STORE_MODES)[number];
 
-/** Environment variables that influence storage selection. */
 export type ClickStoreEnv = {
   CLICK_STORE?: string | undefined;
   CLICK_LOG_PATH?: string | undefined;
@@ -13,7 +12,6 @@ export type ClickStoreEnv = {
   VERCEL_ENV?: string | undefined;
 };
 
-/** A fully decided storage configuration, before any I/O happens. */
 export type ClickStoreResolution =
   | { kind: "file"; mode: ClickStoreMode; logPath: string }
   | { kind: "postgres"; mode: ClickStoreMode; connectionString: string }
@@ -24,22 +22,10 @@ function clean(value: string | undefined): string | undefined {
   return trimmed === "" ? undefined : trimmed;
 }
 
-/**
- * Serverless filesystems are ephemeral and per-instance, so a click log written
- * there is lost on the next cold start and never shared between instances.
- */
 function isServerless(env: ClickStoreEnv): boolean {
   return env.VERCEL === "1" || clean(env.VERCEL_ENV) !== undefined;
 }
 
-/**
- * Decides which click store to use from the environment. Pure and synchronous so
- * every branch is unit-testable without touching a filesystem or a database.
- *
- * @throws {ClickStoreConfigError} for an unknown mode, or `postgres` with no
- * `DATABASE_URL` — a misconfigured database must fail loudly rather than quietly
- * degrade to a store the operator did not ask for.
- */
 export function resolveClickStore(env: ClickStoreEnv): ClickStoreResolution {
   const requested = clean(env.CLICK_STORE)?.toLowerCase() ?? "auto";
 

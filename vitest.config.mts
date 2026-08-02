@@ -5,7 +5,6 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   resolve: {
     alias: {
-      // Mirrors the `paths` entries in tsconfig.json.
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       "~": fileURLToPath(new URL(".", import.meta.url)),
     },

@@ -2,17 +2,10 @@ import type { ClickAggregate, ClickEvent } from "./types";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-/**
- * Rolls click events up per slug.
- *
- * Kept as a pure function so the same windowing logic can be unit-tested with a
- * fixed clock, independent of any storage backend. The PostgreSQL store performs
- * the equivalent rollup in SQL; this powers the file store.
- *
- * Events with unparseable timestamps are skipped. Rows come back sorted by total
- * clicks descending, then by slug, so output is stable.
- */
-export function aggregateClicks(events: Iterable<ClickEvent>, now: Date = new Date()): ClickAggregate[] {
+export function aggregateClicks(
+  events: Iterable<ClickEvent>,
+  now: Date = new Date(),
+): ClickAggregate[] {
   const sevenDaysAgo = now.getTime() - 7 * DAY_MS;
   const thirtyDaysAgo = now.getTime() - 30 * DAY_MS;
 
@@ -43,12 +36,17 @@ export function aggregateClicks(events: Iterable<ClickEvent>, now: Date = new Da
       row.last30Days += 1;
     }
 
-    if (row.lastClickedAt === null || timestamp > Date.parse(row.lastClickedAt)) {
+    if (
+      row.lastClickedAt === null ||
+      timestamp > Date.parse(row.lastClickedAt)
+    ) {
       row.lastClickedAt = new Date(timestamp).toISOString();
     }
 
     rows.set(event.slug, row);
   }
 
-  return [...rows.values()].sort((a, b) => b.total - a.total || a.slug.localeCompare(b.slug));
+  return [...rows.values()].sort(
+    (a, b) => b.total - a.total || a.slug.localeCompare(b.slug),
+  );
 }

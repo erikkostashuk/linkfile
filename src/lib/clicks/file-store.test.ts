@@ -30,30 +30,58 @@ describe("createFileClickStore", () => {
   });
 
   it("returns an empty aggregate before any click is recorded", async () => {
-    await expect(createFileClickStore(logPath).aggregate()).resolves.toEqual([]);
+    await expect(createFileClickStore(logPath).aggregate()).resolves.toEqual(
+      [],
+    );
   });
 
   it("creates missing parent directories on the first write", async () => {
     const store = createFileClickStore(logPath);
-    await store.record({ slug: "github", clickedAt: "2026-08-02T12:00:00.000Z" });
+    await store.record({
+      slug: "github",
+      clickedAt: "2026-08-02T12:00:00.000Z",
+    });
 
-    await expect(readFile(logPath, "utf8")).resolves.toBe('{"slug":"github","clickedAt":"2026-08-02T12:00:00.000Z"}\n');
+    await expect(readFile(logPath, "utf8")).resolves.toBe(
+      '{"slug":"github","clickedAt":"2026-08-02T12:00:00.000Z"}\n',
+    );
   });
 
   it("appends one JSON line per click and reads them all back", async () => {
     const store = createFileClickStore(logPath);
 
-    await store.record({ slug: "github", clickedAt: "2026-08-02T12:00:00.000Z" });
-    await store.record({ slug: "github", clickedAt: "2026-08-02T13:00:00.000Z" });
-    await store.record({ slug: "writing", clickedAt: "2026-08-02T14:00:00.000Z" });
+    await store.record({
+      slug: "github",
+      clickedAt: "2026-08-02T12:00:00.000Z",
+    });
+    await store.record({
+      slug: "github",
+      clickedAt: "2026-08-02T13:00:00.000Z",
+    });
+    await store.record({
+      slug: "writing",
+      clickedAt: "2026-08-02T14:00:00.000Z",
+    });
 
     const contents = await readFile(logPath, "utf8");
     expect(contents.trim().split("\n")).toHaveLength(3);
 
     const rows = await store.aggregate(new Date("2026-08-02T15:00:00.000Z"));
     expect(rows).toEqual([
-      { slug: "github", total: 2, last7Days: 2, last30Days: 2, lastClickedAt: "2026-08-02T13:00:00.000Z" },
-      { slug: "writing", total: 1, last7Days: 1, last30Days: 1, lastClickedAt: "2026-08-02T14:00:00.000Z" },
+      {
+        slug: "github",
+        total: 2,
+        last7Days: 2,
+        last30Days: 2,
+        lastClickedAt: "2026-08-02T13:00:00.000Z",
+      },
+      {
+        slug: "writing",
+        total: 1,
+        last7Days: 1,
+        last30Days: 1,
+        lastClickedAt: "2026-08-02T14:00:00.000Z",
+      },
     ]);
   });
 
@@ -62,7 +90,10 @@ describe("createFileClickStore", () => {
 
     await Promise.all(
       Array.from({ length: 25 }, (_unused, index) =>
-        store.record({ slug: "github", clickedAt: new Date(Date.UTC(2026, 7, 2, 12, 0, index)).toISOString() }),
+        store.record({
+          slug: "github",
+          clickedAt: new Date(Date.UTC(2026, 7, 2, 12, 0, index)).toISOString(),
+        }),
       ),
     );
 
@@ -83,27 +114,45 @@ describe("createFileClickStore", () => {
         '{"slug":"github","clickedAt":"nonsense"}',
         '{"slug":"","clickedAt":"2026-08-02T12:00:00.000Z"}',
         '["github","2026-08-02T12:00:00.000Z"]',
-        '{"slug":"github","clickedAt":"2026-08-02T12:30:00.00', // truncated write
+        '{"slug":"github","clickedAt":"2026-08-02T12:30:00.00',
         '{"slug":"writing","clickedAt":"2026-08-02T12:45:00.000Z"}',
       ].join("\n"),
       "utf8",
     );
 
-    const rows = await createFileClickStore(join(directory, "clicks.log")).aggregate(
-      new Date("2026-08-02T13:00:00.000Z"),
-    );
+    const rows = await createFileClickStore(
+      join(directory, "clicks.log"),
+    ).aggregate(new Date("2026-08-02T13:00:00.000Z"));
 
     expect(rows).toEqual([
-      { slug: "github", total: 1, last7Days: 1, last30Days: 1, lastClickedAt: "2026-08-02T12:00:00.000Z" },
-      { slug: "writing", total: 1, last7Days: 1, last30Days: 1, lastClickedAt: "2026-08-02T12:45:00.000Z" },
+      {
+        slug: "github",
+        total: 1,
+        last7Days: 1,
+        last30Days: 1,
+        lastClickedAt: "2026-08-02T12:00:00.000Z",
+      },
+      {
+        slug: "writing",
+        total: 1,
+        last7Days: 1,
+        last30Days: 1,
+        lastClickedAt: "2026-08-02T12:45:00.000Z",
+      },
     ]);
   });
 
   it("tolerates a log with no trailing newline", async () => {
     const file = join(directory, "clicks.log");
-    await writeFile(file, '{"slug":"github","clickedAt":"2026-08-02T12:00:00.000Z"}', "utf8");
+    await writeFile(
+      file,
+      '{"slug":"github","clickedAt":"2026-08-02T12:00:00.000Z"}',
+      "utf8",
+    );
 
-    const rows = await createFileClickStore(file).aggregate(new Date("2026-08-02T13:00:00.000Z"));
+    const rows = await createFileClickStore(file).aggregate(
+      new Date("2026-08-02T13:00:00.000Z"),
+    );
     expect(rows[0]?.total).toBe(1);
   });
 
@@ -123,13 +172,17 @@ describe("click log format", () => {
   });
 
   it("writes exactly one trailing newline and nothing else", () => {
-    expect(serializeClickEvent({ slug: "a", clickedAt: "2026-08-02T12:00:00.000Z" })).toBe(
-      '{"slug":"a","clickedAt":"2026-08-02T12:00:00.000Z"}\n',
-    );
+    expect(
+      serializeClickEvent({ slug: "a", clickedAt: "2026-08-02T12:00:00.000Z" }),
+    ).toBe('{"slug":"a","clickedAt":"2026-08-02T12:00:00.000Z"}\n');
   });
 
   it("writes only the slug and timestamp, never extra fields handed to it", () => {
-    const event = { slug: "a", clickedAt: "2026-08-02T12:00:00.000Z", ip: "203.0.113.1" } as ClickEvent;
+    const event = {
+      slug: "a",
+      clickedAt: "2026-08-02T12:00:00.000Z",
+      ip: "203.0.113.1",
+    } as ClickEvent;
 
     expect(serializeClickEvent(event)).not.toContain("203.0.113.1");
   });

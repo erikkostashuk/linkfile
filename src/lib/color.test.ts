@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { contrastRatio, hexToRgb, readableForeground, relativeLuminance } from "./color";
+import {
+  contrastRatio,
+  hexToRgb,
+  readableForeground,
+  relativeLuminance,
+} from "./color";
 import { initials } from "./initials";
-import { DEFAULT_SITE_URL, normalizeSiteUrl } from "./site";
+import { DEFAULT_SITE_URL, normalizeSiteUrl, resolveSiteUrl } from "./site";
 
 describe("hexToRgb", () => {
   it.each([
@@ -30,7 +35,9 @@ describe("relativeLuminance", () => {
 
 describe("contrastRatio", () => {
   it("reports the maximum 21:1 for black on white", () => {
-    expect(contrastRatio({ r: 0, g: 0, b: 0 }, { r: 255, g: 255, b: 255 })).toBeCloseTo(21, 5);
+    expect(
+      contrastRatio({ r: 0, g: 0, b: 0 }, { r: 255, g: 255, b: 255 }),
+    ).toBeCloseTo(21, 5);
   });
 
   it("is symmetric", () => {
@@ -54,11 +61,20 @@ describe("readableForeground", () => {
   });
 
   it("always reaches at least 4.5:1 against the accent it was chosen for", () => {
-    for (const accent of ["#7c3aed", "#fde047", "#22d3ee", "#dc2626", "#065f46", "#e2e8f0"]) {
+    for (const accent of [
+      "#7c3aed",
+      "#fde047",
+      "#22d3ee",
+      "#dc2626",
+      "#065f46",
+      "#e2e8f0",
+    ]) {
       const accentRgb = hexToRgb(accent)!;
       const foregroundRgb = hexToRgb(readableForeground(accent))!;
 
-      expect(contrastRatio(accentRgb, foregroundRgb)).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(accentRgb, foregroundRgb)).toBeGreaterThanOrEqual(
+        4.5,
+      );
     }
   });
 
@@ -95,7 +111,31 @@ describe("normalizeSiteUrl", () => {
     expect(normalizeSiteUrl(input)).toBe(expected);
   });
 
-  it.each([undefined, "", "   ", "not a url"])("falls back to localhost for %j", (input) => {
-    expect(normalizeSiteUrl(input)).toBe(DEFAULT_SITE_URL);
+  it.each([undefined, "", "   ", "not a url"])(
+    "falls back to localhost for %j",
+    (input) => {
+      expect(normalizeSiteUrl(input)).toBe(DEFAULT_SITE_URL);
+    },
+  );
+});
+
+describe("resolveSiteUrl", () => {
+  it("prefers an explicitly configured site URL", () => {
+    expect(
+      resolveSiteUrl({
+        NEXT_PUBLIC_SITE_URL: "https://links.example.com/",
+        VERCEL_PROJECT_PRODUCTION_URL: "linkfile.vercel.app",
+      }),
+    ).toBe("https://links.example.com");
+  });
+
+  it("uses Vercel's stable production domain when no URL is configured", () => {
+    expect(
+      resolveSiteUrl({ VERCEL_PROJECT_PRODUCTION_URL: "linkfile.vercel.app" }),
+    ).toBe("https://linkfile.vercel.app");
+  });
+
+  it("keeps localhost as the zero-config local fallback", () => {
+    expect(resolveSiteUrl({})).toBe(DEFAULT_SITE_URL);
   });
 });

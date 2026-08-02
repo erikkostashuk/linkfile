@@ -4,7 +4,6 @@ import realConfig from "~/links.json";
 
 import { LinkfileConfigError, formatIssuePath, parseConfig } from "./parse";
 
-/** A minimal configuration that every test mutates into the shape it needs. */
 function validConfig() {
   return {
     profile: {
@@ -21,7 +20,12 @@ function validConfig() {
       description: "Projects, writing and ways to get in touch.",
     },
     links: [
-      { slug: "projects", title: "Projects", url: "https://example.com/projects", emoji: "🚀" },
+      {
+        slug: "projects",
+        title: "Projects",
+        url: "https://example.com/projects",
+        emoji: "🚀",
+      },
       { slug: "contact", title: "Email me", url: "mailto:hello@example.com" },
     ],
   };
@@ -35,7 +39,9 @@ function expectIssues(input: unknown): readonly string[] {
     return (error as LinkfileConfigError).issues;
   }
 
-  throw new Error("Expected parseConfig to reject this configuration, but it was accepted.");
+  throw new Error(
+    "Expected parseConfig to reject this configuration, but it was accepted.",
+  );
 }
 
 describe("parseConfig — valid configuration", () => {
@@ -43,14 +49,20 @@ describe("parseConfig — valid configuration", () => {
     const parsed = parseConfig(validConfig());
 
     expect(parsed.profile.name).toBe("Alex Rivera");
-    expect(parsed.links.map((link) => link.slug)).toEqual(["projects", "contact"]);
+    expect(parsed.links.map((link) => link.slug)).toEqual([
+      "projects",
+      "contact",
+    ]);
   });
 
   it("defaults showBranding to true and leaves optional fields undefined", () => {
     const input = validConfig();
-    delete (input.profile as Partial<ReturnType<typeof validConfig>["profile"]>).showBranding;
-    delete (input.profile as Partial<ReturnType<typeof validConfig>["profile"]>).location;
-    delete (input.profile as Partial<ReturnType<typeof validConfig>["profile"]>).accent;
+    delete (input.profile as Partial<ReturnType<typeof validConfig>["profile"]>)
+      .showBranding;
+    delete (input.profile as Partial<ReturnType<typeof validConfig>["profile"]>)
+      .location;
+    delete (input.profile as Partial<ReturnType<typeof validConfig>["profile"]>)
+      .accent;
 
     const parsed = parseConfig(input);
 
@@ -60,7 +72,10 @@ describe("parseConfig — valid configuration", () => {
   });
 
   it("strips the $schema pointer used by editors", () => {
-    const parsed = parseConfig({ $schema: "./links.schema.json", ...validConfig() });
+    const parsed = parseConfig({
+      $schema: "./links.schema.json",
+      ...validConfig(),
+    });
 
     expect(parsed).not.toHaveProperty("$schema");
   });
@@ -75,9 +90,19 @@ describe("parseConfig — valid configuration", () => {
   it("accepts https, http and mailto destinations", () => {
     const input = validConfig();
     input.links = [
-      { slug: "secure", title: "Secure", url: "https://example.com", emoji: "🔒" },
+      {
+        slug: "secure",
+        title: "Secure",
+        url: "https://example.com",
+        emoji: "🔒",
+      },
       { slug: "plain", title: "Plain", url: "http://example.com", emoji: "📄" },
-      { slug: "mail", title: "Mail", url: "mailto:hello@example.com", emoji: "✉️" },
+      {
+        slug: "mail",
+        title: "Mail",
+        url: "mailto:hello@example.com",
+        emoji: "✉️",
+      },
     ];
 
     expect(parseConfig(input).links).toHaveLength(3);
@@ -88,8 +113,18 @@ describe("parseConfig — link rules", () => {
   it("rejects duplicate slugs and names the conflicting entry", () => {
     const input = validConfig();
     input.links = [
-      { slug: "projects", title: "Projects", url: "https://example.com/a", emoji: "🚀" },
-      { slug: "projects", title: "Also projects", url: "https://example.com/b", emoji: "🚀" },
+      {
+        slug: "projects",
+        title: "Projects",
+        url: "https://example.com/a",
+        emoji: "🚀",
+      },
+      {
+        slug: "projects",
+        title: "Also projects",
+        url: "https://example.com/b",
+        emoji: "🚀",
+      },
     ];
 
     const issues = expectIssues(input);
@@ -117,14 +152,18 @@ describe("parseConfig — link rules", () => {
 
   it("rejects relative URLs", () => {
     const input = validConfig();
-    input.links = [{ slug: "relative", title: "Relative", url: "/somewhere", emoji: "➡️" }];
+    input.links = [
+      { slug: "relative", title: "Relative", url: "/somewhere", emoji: "➡️" },
+    ];
 
     expect(expectIssues(input)[0]).toContain("is not an absolute URL");
   });
 
   it("rejects an empty title", () => {
     const input = validConfig();
-    input.links = [{ slug: "blank", title: "   ", url: "https://example.com", emoji: "❓" }];
+    input.links = [
+      { slug: "blank", title: "   ", url: "https://example.com", emoji: "❓" },
+    ];
 
     const issues = expectIssues(input);
 
@@ -132,20 +171,31 @@ describe("parseConfig — link rules", () => {
     expect(issues[0]).toContain("must not be empty");
   });
 
-  it.each(["Projects", "my_link", "double--hyphen", "-leading", "trailing-", "with space"])(
-    "rejects the malformed slug %j",
-    (slug) => {
-      const input = validConfig();
-      input.links = [{ slug, title: "Link", url: "https://example.com", emoji: "🔗" }];
+  it.each([
+    "Projects",
+    "my_link",
+    "double--hyphen",
+    "-leading",
+    "trailing-",
+    "with space",
+  ])("rejects the malformed slug %j", (slug) => {
+    const input = validConfig();
+    input.links = [
+      { slug, title: "Link", url: "https://example.com", emoji: "🔗" },
+    ];
 
-      expect(expectIssues(input)[0]).toContain("links[0].slug");
-    },
-  );
+    expect(expectIssues(input)[0]).toContain("links[0].slug");
+  });
 
   it("rejects unknown link properties so typos are caught rather than ignored", () => {
     const input = validConfig();
     input.links = [
-      { slug: "typo", title: "Link", url: "https://example.com", icon: "🔗" } as unknown as (typeof input.links)[number],
+      {
+        slug: "typo",
+        title: "Link",
+        url: "https://example.com",
+        icon: "🔗",
+      } as unknown as (typeof input.links)[number],
     ];
 
     const issues = expectIssues(input);
@@ -163,26 +213,35 @@ describe("parseConfig — link rules", () => {
 });
 
 describe("parseConfig — profile rules", () => {
-  it.each(["7c3aed", "#12345", "rgb(0,0,0)", "purple", "#ggghhh"])("rejects the invalid accent %j", (accent) => {
-    const input = validConfig();
-    input.profile.accent = accent;
+  it.each(["7c3aed", "#12345", "rgb(0,0,0)", "purple", "#ggghhh"])(
+    "rejects the invalid accent %j",
+    (accent) => {
+      const input = validConfig();
+      input.profile.accent = accent;
 
-    expect(expectIssues(input)[0]).toContain("profile.accent");
-  });
+      expect(expectIssues(input)[0]).toContain("profile.accent");
+    },
+  );
 
-  it.each(["#fff", "#7c3aed", "#7C3AEDCC"])("accepts the valid accent %j", (accent) => {
-    const input = validConfig();
-    input.profile.accent = accent;
+  it.each(["#fff", "#7c3aed", "#7C3AEDCC"])(
+    "accepts the valid accent %j",
+    (accent) => {
+      const input = validConfig();
+      input.profile.accent = accent;
 
-    expect(parseConfig(input).profile.accent).toBe(accent);
-  });
+      expect(parseConfig(input).profile.accent).toBe(accent);
+    },
+  );
 
-  it.each(["name", "handle", "bio", "avatar"] as const)("rejects a missing profile.%s", (field) => {
-    const input = validConfig();
-    delete (input.profile as Record<string, unknown>)[field];
+  it.each(["name", "handle", "bio", "avatar"] as const)(
+    "rejects a missing profile.%s",
+    (field) => {
+      const input = validConfig();
+      delete (input.profile as Record<string, unknown>)[field];
 
-    expect(expectIssues(input)[0]).toContain(`profile.${field}`);
-  });
+      expect(expectIssues(input)[0]).toContain(`profile.${field}`);
+    },
+  );
 
   it("rejects an avatar that is not a public path", () => {
     const input = validConfig();
@@ -216,7 +275,10 @@ describe("parseConfig — profile rules", () => {
 
 describe("LinkfileConfigError", () => {
   it("names the source file and lists every issue in its message", () => {
-    const error = new LinkfileConfigError(["links[0].url: bad protocol"], "links.json");
+    const error = new LinkfileConfigError(
+      ["links[0].url: bad protocol"],
+      "links.json",
+    );
 
     expect(error.message).toContain("links.json");
     expect(error.message).toContain("links[0].url: bad protocol");

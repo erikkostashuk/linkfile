@@ -1,30 +1,12 @@
-# ---------------------------------------------------------------------------
-# Caddy reverse proxy for Linkfile
-#
-# Caddy obtains and renews a Let's Encrypt certificate automatically — there is
-# no certbot step and no cron job to configure.
-#
-#   sudo cp deploy/Caddyfile /etc/caddy/Caddyfile
-#   sudo caddy validate --config /etc/caddy/Caddyfile
-#   sudo systemctl reload caddy
-#
-# Replace links.example.com with your domain and point its A/AAAA records at
-# this server first, or the certificate request will fail.
-# ---------------------------------------------------------------------------
-
 links.example.com {
 	encode zstd gzip
 
-	# Forwarded headers (X-Forwarded-For / -Proto / -Host) are set by Caddy
-	# automatically, so Next.js sees the original scheme and host.
 	reverse_proxy 127.0.0.1:3000 {
 		health_uri /api/health
 		health_interval 30s
 		health_timeout 5s
 	}
 
-	# Linkfile sets its own CSP, Referrer-Policy and Permissions-Policy. Only
-	# HSTS is added here, because it belongs to the TLS terminator.
 	header {
 		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
 		-Server
@@ -35,15 +17,5 @@ links.example.com {
 			roll_size 10MiB
 			roll_keep 5
 		}
-		# Linkfile records no visitor data itself. If you want the same for your
-		# proxy, uncomment the next line to stop logging client IP addresses.
-		# format filter {
-		# 	request>remote_ip delete
-		# }
 	}
 }
-
-# Optional: redirect the apex domain to the profile.
-# example.com {
-# 	redir https://links.example.com{uri} permanent
-# }

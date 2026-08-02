@@ -1,23 +1,3 @@
-# ---------------------------------------------------------------------------
-# systemd unit for running Linkfile directly on a VPS (no Docker).
-#
-#   sudo useradd --system --create-home --home-dir /srv/linkfile linkfile
-#   sudo -u linkfile git clone https://github.com/erikkostashuk/linkfile /srv/linkfile/app
-#   cd /srv/linkfile/app && sudo -u linkfile npm ci && sudo -u linkfile npm run build
-#   sudo cp deploy/linkfile.service /etc/systemd/system/
-#   sudo systemctl daemon-reload
-#   sudo systemctl enable --now linkfile
-#
-# Logs:     sudo journalctl -u linkfile -f
-# Restart:  sudo systemctl restart linkfile
-#
-# After editing links.json you must rebuild, because the configuration is
-# compiled into the build:
-#
-#   cd /srv/linkfile/app && sudo -u linkfile git pull && sudo -u linkfile npm ci \
-#     && sudo -u linkfile npm run build && sudo systemctl restart linkfile
-# ---------------------------------------------------------------------------
-
 [Unit]
 Description=Linkfile — link-in-bio page
 Documentation=https://github.com/erikkostashuk/linkfile
@@ -30,9 +10,6 @@ User=linkfile
 Group=linkfile
 WorkingDirectory=/srv/linkfile/app
 
-# Secrets live in a root-owned file readable only by the service user:
-#   sudo install -o linkfile -g linkfile -m 600 /dev/null /srv/linkfile/linkfile.env
-#   sudo -u linkfile editor /srv/linkfile/linkfile.env
 EnvironmentFile=/srv/linkfile/linkfile.env
 Environment=NODE_ENV=production
 Environment=PORT=3000
@@ -42,8 +19,6 @@ ExecStart=/usr/bin/node .next/standalone/server.js
 Restart=on-failure
 RestartSec=5s
 
-# Hardening. Analytics are the only thing Linkfile writes, so the click log
-# directory is the only writable path it needs.
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict

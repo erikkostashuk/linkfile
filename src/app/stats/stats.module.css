@@ -1,19 +1,24 @@
 .page {
-  display: flex;
-  justify-content: center;
+  display: grid;
   min-height: 100dvh;
-  padding: clamp(3rem, 8vw, 5rem) 1.5rem 3rem;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 3rem);
 }
 
 .shell {
   width: 100%;
-  max-width: 44rem;
+  max-width: 50rem;
   display: flex;
   flex-direction: column;
   gap: 1.75rem;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  background: var(--surface);
+  box-shadow:
+    0 1px 2px rgb(15 23 42 / 0.03),
+    0 24px 72px -36px rgb(15 23 42 / 0.22);
 }
-
-/* ----------------------------------------------------------------- header */
 
 .header {
   display: flex;
@@ -39,7 +44,8 @@
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: clamp(1.625rem, 4vw, 2rem);
+  letter-spacing: -0.035em;
   line-height: 1.2;
 }
 
@@ -54,17 +60,15 @@
   color: var(--text);
 }
 
-/* ----------------------------------------------------------------- notice */
-
 .notice {
   display: flex;
   flex-direction: column;
   gap: 0.1875rem;
   padding: 0.8125rem 1rem;
   border: 1px solid var(--border);
-  border-left: 2px solid var(--accent-line);
-  border-radius: 8px;
-  background: var(--surface-subtle);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  background: var(--accent-wash);
   font-size: 0.875rem;
   color: var(--text-secondary);
 }
@@ -79,14 +83,12 @@
   font-size: 0.8125rem;
 }
 
-/* ------------------------------------------------------------------- rows */
-
 .rows {
   list-style: none;
   padding: 0;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--surface);
+  border-radius: 14px;
+  background: var(--surface-subtle);
   overflow: hidden;
 }
 
@@ -99,6 +101,7 @@
   flex-direction: column;
   gap: 0.625rem;
   padding: 1rem 1.125rem;
+  background: var(--surface);
 }
 
 .rowHead {
@@ -174,16 +177,8 @@
   min-width: 3rem;
   text-align: right;
 }
-
-/* -------------------------------------------------------------------- bar */
-
-/*
- * The bar and the metrics are indented to line up with the link title rather
- * than the rank number, so each row reads as one aligned column of information
- * instead of three things stacked at the container edge.
- */
 .bar {
-  height: 2px;
+  height: 3px;
   margin-left: 2.125rem;
   border-radius: 999px;
   background: var(--border);
@@ -194,12 +189,8 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  /* Contrast-corrected rather than the raw accent, so a dark or pale accent
-     stays visible against the track in both themes. */
   background: var(--accent-text);
 }
-
-/* ---------------------------------------------------------------- metrics */
 
 .metrics {
   display: flex;
@@ -225,8 +216,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ----------------------------------------------------------------- footer */
-
 .footer {
   display: flex;
   flex-wrap: wrap;
@@ -239,4 +228,18 @@
 .footer code {
   font-family: var(--font-mono);
   color: var(--text-secondary);
+}
+
+@media (max-width: 35rem) {
+  .page {
+    padding: 0;
+  }
+
+  .shell {
+    min-height: 100dvh;
+    padding: 2.25rem 1.25rem;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
 }

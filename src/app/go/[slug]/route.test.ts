@@ -15,14 +15,15 @@ let directory: string;
 let logPath: string;
 
 function request(slug: string) {
-  return GET(new Request(`http://localhost:3000/go/${slug}`), { params: Promise.resolve({ slug }) });
+  return GET(new Request(`http://localhost:3000/go/${slug}`), {
+    params: Promise.resolve({ slug }),
+  });
 }
 
 beforeEach(async () => {
   directory = await mkdtemp(join(tmpdir(), "linkfile-route-"));
   logPath = join(directory, "clicks.log");
 
-  // Point the file store at a throwaway log so tests never touch the real .data.
   vi.stubEnv("CLICK_STORE", "file");
   vi.stubEnv("CLICK_LOG_PATH", logPath);
 });
@@ -59,12 +60,15 @@ describe("GET /go/[slug]", () => {
     expect(new Date(recorded.clickedAt).toISOString()).toBe(recorded.clickedAt);
   });
 
-  it.each(["nope", "GitHub", "../../etc/passwd", "", "go"])("returns 404 for the unknown slug %j", async (slug) => {
-    const response = await request(slug);
+  it.each(["nope", "GitHub", "../../etc/passwd", "", "go"])(
+    "returns 404 for the unknown slug %j",
+    async (slug) => {
+      const response = await request(slug);
 
-    expect(response.status).toBe(404);
-    expect(response.headers.get("Location")).toBeNull();
-  });
+      expect(response.status).toBe(404);
+      expect(response.headers.get("Location")).toBeNull();
+    },
+  );
 
   it("does not record a click for an unknown slug", async () => {
     await request("definitely-not-configured");
@@ -73,9 +77,14 @@ describe("GET /go/[slug]", () => {
   });
 
   it("ignores any redirect target supplied by the request", async () => {
-    const response = await GET(new Request("http://localhost:3000/go/x?url=https://evil.example.com&to=//evil.test"), {
-      params: Promise.resolve({ slug: firstLink.slug }),
-    });
+    const response = await GET(
+      new Request(
+        "http://localhost:3000/go/x?url=https://evil.example.com&to=//evil.test",
+      ),
+      {
+        params: Promise.resolve({ slug: firstLink.slug }),
+      },
+    );
 
     expect(response.headers.get("Location")).toBe(firstLink.url);
   });
@@ -83,8 +92,6 @@ describe("GET /go/[slug]", () => {
   it("still redirects when recording fails, and logs the failure once", async () => {
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    // Create the log as a real file, then point the store at a path *underneath*
-    // it. Creating that directory fails with ENOTDIR, so recording throws.
     await request(firstLink.slug);
     vi.stubEnv("CLICK_LOG_PATH", join(logPath, "impossible", "clicks.log"));
 
@@ -93,7 +100,9 @@ describe("GET /go/[slug]", () => {
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe(firstLink.url);
     expect(error).toHaveBeenCalled();
-    expect(String(error.mock.calls[0]?.[0])).toContain("Failed to record click");
+    expect(String(error.mock.calls[0]?.[0])).toContain(
+      "Failed to record click",
+    );
   });
 
   it("still redirects when the click store is misconfigured", async () => {

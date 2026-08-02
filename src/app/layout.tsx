@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
 
-import { accent, accentForeground, config } from "@/lib/config";
+import { accent, config } from "@/lib/config";
 import { siteUrl } from "@/lib/site";
 
 import "./globals.css";
@@ -36,21 +36,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: "light dark",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fafaf9" },
-    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
-  ],
+  colorScheme: "light",
+  themeColor: "#f4f7fb",
 };
 
-/**
- * The accent from links.json is published as a CSS custom property on <html>.
- * Every accent-derived colour in globals.css is computed from it with
- * `color-mix`, so one JSON value themes the whole site with no client script.
- */
 const accentVariables = {
   "--accent": accent,
-  "--accent-foreground": accentForeground,
 } as CSSProperties;
 
 export default function RootLayout({ children }: { children: ReactNode }) {

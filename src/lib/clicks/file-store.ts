@@ -1,30 +1,27 @@
 import { appendFile, mkdir, readFile } from "node:fs/promises";
-import { dirname, isAbsolute, resolve } from "node:path";
+import { dirname, isAbsolute } from "node:path";
 
 import { aggregateClicks } from "./aggregate";
 import { parseClickLine, serializeClickEvent } from "./log-format";
 import type { ClickAggregate, ClickEvent, ClickStore } from "./types";
 
-/** Default location of the append-only click log, relative to the project root. */
 export const DEFAULT_CLICK_LOG_PATH = ".data/clicks.log";
 
 function isNotFound(error: unknown): boolean {
-  return typeof error === "object" && error !== null && (error as NodeJS.ErrnoException).code === "ENOENT";
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    (error as NodeJS.ErrnoException).code === "ENOENT"
+  );
 }
 
-/**
- * Append-only JSON Lines click store for local development, VPS and Docker.
- *
- * One line per click keeps writes atomic enough for a single process, keeps the
- * file greppable, and means a partially written tail can never corrupt earlier
- * records. Mount the containing directory as a volume to persist it.
- */
-export function createFileClickStore(logPath: string = DEFAULT_CLICK_LOG_PATH): ClickStore {
-  // `turbopackIgnore` tells the bundler's file tracer that this path is resolved
-  // at runtime from the working directory. Without it the tracer assumes the
-  // whole project directory is a dependency and copies it into the standalone
-  // build output.
-  const absolutePath = isAbsolute(logPath) ? logPath : resolve(/* turbopackIgnore: true */ process.cwd(), logPath);
+export function createFileClickStore(
+  logPath: string = DEFAULT_CLICK_LOG_PATH,
+): ClickStore {
+  const workingDirectory = process.cwd();
+  const absolutePath = isAbsolute(logPath)
+    ? logPath
+    : `${workingDirectory}/${logPath}`;
 
   return {
     kind: "file",
@@ -43,7 +40,6 @@ export function createFileClickStore(logPath: string = DEFAULT_CLICK_LOG_PATH): 
         contents = await readFile(absolutePath, "utf8");
       } catch (error) {
         if (isNotFound(error)) {
-          // No clicks recorded yet is a normal, empty state — not an error.
           return [];
         }
         throw error;

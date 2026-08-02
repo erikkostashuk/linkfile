@@ -1,21 +1,11 @@
 import { z } from "zod";
 
-/**
- * Protocols a link destination is allowed to use.
- *
- * Everything else — most importantly `javascript:` and `data:` — is rejected at
- * configuration time so an unsafe destination can never reach the redirect
- * handler or the rendered page.
- */
 export const ALLOWED_PROTOCOLS = ["https:", "http:", "mailto:"] as const;
 
-/** Matches `#rgb`, `#rrggbb` and `#rrggbbaa`. */
 const HEX_COLOUR = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
 
-/** Lowercase, hyphen-separated identifiers such as `open-source`. */
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-/** Avatar must be a root-relative path served from `/public`. */
 const PUBLIC_PATH = /^\/[^\s]*$/;
 
 const trimmed = (label: string, max: number) =>
@@ -56,7 +46,8 @@ export const linkSchema = z.strictObject({
     .min(1, { error: "slug must not be empty" })
     .max(64, { error: "slug must be 64 characters or fewer" })
     .regex(SLUG, {
-      error: "slug may only contain lowercase letters, numbers and single hyphens (for example: my-newsletter)",
+      error:
+        "slug may only contain lowercase letters, numbers and single hyphens (for example: my-newsletter)",
     }),
   title: trimmed("title", 80),
   url: destinationUrl,
@@ -73,7 +64,8 @@ export const profileSchema = z.strictObject({
   handle: trimmed("profile.handle", 40),
   bio: trimmed("profile.bio", 280),
   avatar: trimmed("profile.avatar", 200).regex(PUBLIC_PATH, {
-    error: 'profile.avatar must be a path inside /public, for example "/avatar.svg"',
+    error:
+      'profile.avatar must be a path inside /public, for example "/avatar.svg"',
   }),
   location: trimmed("profile.location", 60).optional(),
   accent: z
@@ -93,7 +85,6 @@ export const metadataSchema = z.strictObject({
 
 export const linkfileConfigSchema = z
   .strictObject({
-    // Present so editors can resolve links.schema.json. Ignored at runtime.
     $schema: z.string().optional(),
     profile: profileSchema,
     metadata: metadataSchema,

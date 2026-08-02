@@ -15,12 +15,12 @@ npm run dev
 Before opening a pull request:
 
 ```bash
-npm run check   # lint + typecheck + tests
+npm run check
 npm run build
 ```
 
 CI runs exactly these two commands on Node 22. Please fix failures rather than working around them — no new ESLint
-disables, `@ts-expect-error`s, or skipped tests without a comment explaining why.
+disables, `@ts-expect-error`s, or skipped tests.
 
 ## What Linkfile is trying to be
 
@@ -58,7 +58,8 @@ Keep the interface unchanged if you can — routes and pages must not need to kn
 ## Code style
 
 - TypeScript strict mode; no `any`, and prefer narrow types over casts.
-- Comments explain *why*, not *what*. If a line needs a "what" comment, the line probably wants rewriting.
+- Keep production source and configuration comment-free. Use clear names and structure, and put explanations in the
+  documentation.
 - Match the surrounding formatting. There is no Prettier hook, so keep diffs tidy by hand.
 - Small, focused commits with a clear message. One concern per pull request.
 

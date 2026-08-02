@@ -12,8 +12,6 @@ import styles from "./stats.module.css";
 
 export const runtime = "nodejs";
 
-// Never cached or prerendered: the response is credential-gated and changes on
-// every click.
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -25,9 +23,6 @@ export const metadata: Metadata = {
 const numberFormat = new Intl.NumberFormat("en-US");
 
 export default async function StatsPage() {
-  // Second, independent authorisation check. src/proxy.ts already rejected
-  // unauthenticated requests; repeating it here means statistics are never
-  // rendered by a request that skipped the proxy layer.
   const requestHeaders = await headers();
   const auth = authorizeStatsRequest(requestHeaders.get("authorization"), {
     STATS_USERNAME: process.env.STATS_USERNAME,
@@ -53,9 +48,11 @@ export default async function StatsPage() {
           </p>
           <h1 className={styles.title}>{config.profile.name}</h1>
           <p className={styles.summary}>
-            <strong className={styles.summaryTotal}>{numberFormat.format(totalClicks)}</strong>{" "}
-            {totalClicks === 1 ? "click" : "clicks"} recorded across {rows.length}{" "}
-            {rows.length === 1 ? "link" : "links"}.
+            <strong className={styles.summaryTotal}>
+              {numberFormat.format(totalClicks)}
+            </strong>{" "}
+            {totalClicks === 1 ? "click" : "clicks"} recorded across{" "}
+            {rows.length} {rows.length === 1 ? "link" : "links"}.
           </p>
         </header>
 
@@ -70,8 +67,8 @@ export default async function StatsPage() {
           <div className={styles.notice} role="status">
             <strong>No clicks yet.</strong>
             <span>
-              Every link below is live at <code>/go/&lt;slug&gt;</code>. Totals appear here as soon as someone follows
-              one.
+              Every link below is live at <code>/go/&lt;slug&gt;</code>. Totals
+              appear here as soon as someone follows one.
             </span>
           </div>
         ) : null}
@@ -85,13 +82,13 @@ export default async function StatsPage() {
                 </span>
                 <div className={styles.rowIdentity}>
                   <h2 className={styles.rowTitle}>
-                    {row.emoji ? <span aria-hidden="true">{row.emoji} </span> : null}
+                    {row.emoji ? (
+                      <span aria-hidden="true">{row.emoji} </span>
+                    ) : null}
                     {row.title}
                   </h2>
                   <p className={styles.rowMeta}>
                     <code className={styles.slug}>/go/{row.slug}</code>
-                    {/* Arrow and destination share one element so a narrow
-                        screen can never wrap them apart. */}
                     <span className={styles.destination}>
                       <span aria-hidden="true">&rarr;&nbsp;</span>
                       {row.destination}
@@ -99,16 +96,13 @@ export default async function StatsPage() {
                   </p>
                 </div>
                 <div className={styles.rowTotal}>
-                  <span className={styles.rowTotalValue}>{numberFormat.format(row.total)}</span>
+                  <span className={styles.rowTotalValue}>
+                    {numberFormat.format(row.total)}
+                  </span>
                   <span className={styles.rowTotalLabel}>{row.share}%</span>
                 </div>
               </div>
 
-              {/*
-                CSS-only relative bar. Width is a share of the busiest link so
-                differences stay visible; the accessible value lives in the
-                aria-label rather than in the decorative element.
-              */}
               <div
                 className={styles.bar}
                 role="img"
@@ -116,7 +110,9 @@ export default async function StatsPage() {
               >
                 <span
                   className={styles.barFill}
-                  style={{ width: `${busiest === 0 ? 0 : (row.total / busiest) * 100}%` }}
+                  style={{
+                    width: `${busiest === 0 ? 0 : (row.total / busiest) * 100}%`,
+                  }}
                 />
               </div>
 

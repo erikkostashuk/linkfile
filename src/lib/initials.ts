@@ -1,10 +1,3 @@
-/**
- * Builds a one or two letter monogram from a display name.
- *
- * Used by the generated Open Graph image and app icons, which render entirely
- * server-side and therefore cannot depend on the operator's avatar file being a
- * format the image renderer understands.
- */
 export function initials(name: string): string {
   const words = name
     .trim()
@@ -17,7 +10,10 @@ export function initials(name: string): string {
 
   const letters = words
     .slice(0, 2)
-    .map((word) => [...word].find((character) => /\p{L}|\p{N}/u.test(character)) ?? "")
+    .map(
+      (word) =>
+        [...word].find((character) => /\p{L}|\p{N}/u.test(character)) ?? "",
+    )
     .join("");
 
   return letters.toUpperCase() || "L";

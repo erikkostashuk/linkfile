@@ -2,12 +2,6 @@ import { z } from "zod";
 
 import { linkfileConfigSchema, type LinkfileConfig } from "./schema";
 
-/**
- * Thrown when `links.json` is invalid.
- *
- * The message is written for a human editing JSON in their editor, not for a
- * stack trace: it lists every problem at once with the exact JSON path.
- */
 export class LinkfileConfigError extends Error {
   readonly issues: readonly string[];
 
@@ -26,7 +20,6 @@ export class LinkfileConfigError extends Error {
   }
 }
 
-/** Renders a Zod issue path as a JSON pointer humans recognise: `links[2].url`. */
 export function formatIssuePath(path: ReadonlyArray<PropertyKey>): string {
   if (path.length === 0) {
     return "(root)";
@@ -41,15 +34,15 @@ export function formatIssuePath(path: ReadonlyArray<PropertyKey>): string {
 }
 
 function formatIssues(error: z.ZodError): string[] {
-  return error.issues.map((issue) => `${formatIssuePath(issue.path)}: ${issue.message}`);
+  return error.issues.map(
+    (issue) => `${formatIssuePath(issue.path)}: ${issue.message}`,
+  );
 }
 
-/**
- * Validates unknown JSON against the Linkfile schema.
- *
- * @throws {LinkfileConfigError} with every validation problem listed.
- */
-export function parseConfig(input: unknown, source = "links.json"): LinkfileConfig {
+export function parseConfig(
+  input: unknown,
+  source = "links.json",
+): LinkfileConfig {
   const result = linkfileConfigSchema.safeParse(input);
 
   if (!result.success) {

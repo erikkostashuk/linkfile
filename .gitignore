@@ -1,0 +1,33 @@
+# Dependencies
+/node_modules
+
+# Next.js build output
+/.next
+/out
+next-env.d.ts
+*.tsbuildinfo
+
+# Click analytics written by the file click store — never commit visitor data
+/.data
+*.log
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel
+
+# Test + tooling caches
+/coverage
+.eslintcache
+
+# OS / editor noise
+.DS_Store
+Thumbs.db

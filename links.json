@@ -1,0 +1,48 @@
+{
+  "$schema": "./links.schema.json",
+  "profile": {
+    "name": "Alex Rivera",
+    "handle": "@alexbuilds",
+    "bio": "Backend engineer building reliable systems, useful developer tools, and small internet products.",
+    "avatar": "/avatar.svg",
+    "location": "Toronto, Canada",
+    "accent": "#7c3aed",
+    "showBranding": true
+  },
+  "metadata": {
+    "title": "Alex Rivera — Software Engineer",
+    "description": "Projects, writing, open-source work, and ways to reach Alex."
+  },
+  "links": [
+    {
+      "slug": "projects",
+      "title": "See what I'm building",
+      "url": "https://example.com/projects",
+      "emoji": "🚀"
+    },
+    {
+      "slug": "github",
+      "title": "GitHub",
+      "url": "https://github.com/example",
+      "emoji": "💻"
+    },
+    {
+      "slug": "writing",
+      "title": "Read my technical writing",
+      "url": "https://example.com/writing",
+      "emoji": "✍️"
+    },
+    {
+      "slug": "uses",
+      "title": "My tools and setup",
+      "url": "https://example.com/uses",
+      "emoji": "🛠️"
+    },
+    {
+      "slug": "contact",
+      "title": "Send me an email",
+      "url": "mailto:hello@example.com",
+      "emoji": "👋"
+    }
+  ]
+}

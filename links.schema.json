@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/erikkostashuk/linkfile/blob/main/links.schema.json",
+  "title": "Linkfile configuration",
+  "description": "The single source of truth for a Linkfile profile page. Editing this file is the entire CMS.",
+  "type": "object",
+  "required": ["profile", "metadata", "links"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Path to this schema file. Enables validation and autocomplete in editors such as VS Code."
+    },
+    "profile": {
+      "type": "object",
+      "description": "Who the page is about.",
+      "required": ["name", "handle", "bio", "avatar"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name shown as the page heading.",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "handle": {
+          "type": "string",
+          "description": "Short handle shown under the name, for example \"@alexbuilds\".",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "bio": {
+          "type": "string",
+          "description": "One or two sentences describing you.",
+          "minLength": 1,
+          "maxLength": 280
+        },
+        "avatar": {
+          "type": "string",
+          "description": "Path to an image inside /public, for example \"/avatar.svg\".",
+          "pattern": "^/[^\\s]*$"
+        },
+        "location": {
+          "type": "string",
+          "description": "Optional location line, for example \"Toronto, Canada\".",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "accent": {
+          "type": "string",
+          "description": "Optional accent colour as a 3, 6 or 8 digit hex value. Defaults to #7c3aed.",
+          "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
+        },
+        "showBranding": {
+          "type": "boolean",
+          "description": "Show the small \"Built with Linkfile\" footer. Defaults to true."
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Page metadata used for the browser tab, search engines and social previews.",
+      "required": ["title", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Page title, also used in the generated Open Graph image.",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "description": "Meta description and social preview subtitle.",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "description": "Ordered list of links. The array order is the order shown on the page.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["slug", "title", "url"],
+        "additionalProperties": false,
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "URL-safe identifier used for /go/<slug> and click statistics. Must be unique.",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "maxLength": 64
+          },
+          "title": {
+            "type": "string",
+            "description": "Button label shown on the page.",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "url": {
+            "type": "string",
+            "description": "Destination. Only https:, http: and mailto: are allowed.",
+            "pattern": "^(https?://|mailto:)"
+          },
+          "emoji": {
+            "type": "string",
+            "description": "Optional decorative emoji shown before the title.",
+            "minLength": 1,
+            "maxLength": 8
+          }
+        }
+      }
+    }
+  }
+}

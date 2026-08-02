@@ -80,7 +80,7 @@ export const profileSchema = z.strictObject({
     .string()
     .trim()
     .regex(HEX_COLOUR, {
-      error: 'profile.accent must be a hex colour such as "#7c3aed"',
+      error: 'profile.accent must be a hex colour such as "#1d4ed8"',
     })
     .optional(),
   showBranding: z.boolean().optional().default(true),

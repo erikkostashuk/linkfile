@@ -1,5 +1,5 @@
 /** Accent used when `profile.accent` is omitted from links.json. */
-export const DEFAULT_ACCENT = "#7c3aed";
+export const DEFAULT_ACCENT = "#1d4ed8";
 
 export type Rgb = { r: number; g: number; b: number };
 

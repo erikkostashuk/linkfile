@@ -2,15 +2,15 @@
   display: flex;
   justify-content: center;
   min-height: 100dvh;
-  padding: clamp(2.5rem, 7vw, 4.5rem) 1.25rem 3rem;
+  padding: clamp(3rem, 8vw, 5rem) 1.5rem 3rem;
 }
 
 .shell {
   width: 100%;
-  max-width: 46rem;
+  max-width: 44rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.75rem;
 }
 
 /* ----------------------------------------------------------------- header */
@@ -18,7 +18,7 @@
 .header {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
 
 .eyebrow {
@@ -26,28 +26,31 @@
   align-items: center;
   gap: 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent-text);
+  color: var(--text-tertiary);
 }
 
 .eyebrowMark {
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
+  color: var(--accent-text);
 }
 
 .title {
-  font-size: clamp(1.55rem, 5vw, 2rem);
-  line-height: 1.15;
+  font-size: 1.5rem;
+  line-height: 1.2;
 }
 
 .summary {
-  color: var(--text-muted);
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
 }
 
 .summaryTotal {
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
   color: var(--text);
 }
 
@@ -56,14 +59,14 @@
 .notice {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.9rem 1rem;
+  gap: 0.1875rem;
+  padding: 0.8125rem 1rem;
   border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 10px;
-  background: var(--accent-softer);
-  font-size: 0.9rem;
-  color: var(--text-muted);
+  border-left: 2px solid var(--accent-line);
+  border-radius: 8px;
+  background: var(--surface-subtle);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
 }
 
 .notice strong {
@@ -71,25 +74,31 @@
   font-weight: 600;
 }
 
+.notice code {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
 /* ------------------------------------------------------------------- rows */
 
 .rows {
   list-style: none;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.rows li + li {
+  border-top: 1px solid var(--border);
 }
 
 .row {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem 1.125rem 1.125rem;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
+  gap: 0.625rem;
+  padding: 1rem 1.125rem;
 }
 
 .rowHead {
@@ -100,10 +109,11 @@
 
 .rank {
   flex: none;
-  margin-top: 0.15rem;
+  min-width: 1.25rem;
+  margin-top: 0.125rem;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--text-faint);
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
   font-variant-numeric: tabular-nums;
 }
 
@@ -112,12 +122,12 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.1875rem;
 }
 
 .rowTitle {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9375rem;
+  font-weight: 550;
   line-height: 1.35;
   text-wrap: pretty;
 }
@@ -126,19 +136,14 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.8rem;
-  color: var(--text-faint);
+  gap: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
 }
 
 .slug {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  padding: 0.1rem 0.4rem;
-  border-radius: 6px;
-  background: var(--surface-sunken);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
+  font-family: inherit;
 }
 
 .destination {
@@ -150,41 +155,48 @@
 .rowTotal {
   flex: none;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  line-height: 1.2;
+  align-items: baseline;
+  gap: 0.5rem;
 }
 
 .rowTotalValue {
-  font-size: 1.35rem;
+  font-size: 1.0625rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
 }
 
 .rowTotalLabel {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--text-faint);
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
   font-variant-numeric: tabular-nums;
+  min-width: 3rem;
+  text-align: right;
 }
 
 /* -------------------------------------------------------------------- bar */
 
+/*
+ * The bar and the metrics are indented to line up with the link title rather
+ * than the rank number, so each row reads as one aligned column of information
+ * instead of three things stacked at the container edge.
+ */
 .bar {
-  height: 6px;
+  height: 2px;
+  margin-left: 2.125rem;
   border-radius: 999px;
-  background: var(--surface-sunken);
-  border: 1px solid var(--border);
+  background: var(--border);
   overflow: hidden;
 }
 
 .barFill {
   display: block;
   height: 100%;
-  min-width: 0;
   border-radius: inherit;
-  background: var(--accent);
+  /* Contrast-corrected rather than the raw accent, so a dark or pale accent
+     stays visible against the track in both themes. */
+  background: var(--accent-text);
 }
 
 /* ---------------------------------------------------------------- metrics */
@@ -192,25 +204,24 @@
 .metrics {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
-  margin: 0;
-  padding-top: 0.125rem;
+  gap: 0.25rem 1.25rem;
+  margin: 0 0 0 2.125rem;
 }
 
 .metric {
   display: flex;
   align-items: baseline;
-  gap: 0.4rem;
-  font-size: 0.8125rem;
+  gap: 0.375rem;
+  font-size: 0.78125rem;
 }
 
 .metric dt {
-  color: var(--text-faint);
+  color: var(--text-tertiary);
 }
 
 .metric dd {
   margin: 0;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
 
@@ -220,14 +231,12 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 0.5rem 1.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--border);
-  font-size: 0.78rem;
-  color: var(--text-faint);
+  gap: 0.375rem 1.5rem;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
 }
 
 .footer code {
   font-family: var(--font-mono);
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }

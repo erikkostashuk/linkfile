@@ -5,6 +5,10 @@
  * no runtime JavaScript. Themes switch through `prefers-color-scheme`, and the
  * single configurable value — the accent from links.json — arrives as the
  * `--accent` custom property set on <html> by the server-rendered layout.
+ *
+ * The palette is deliberately restrained. Surfaces are neutral, borders are
+ * hairlines, and the accent is reserved for things that mean something: focus
+ * rings, the active hover affordance, and small marks. Nothing decorative.
  */
 
 :root {
@@ -13,27 +17,28 @@
     "Apple Color Emoji", "Segoe UI Emoji";
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
-  --bg: #fafaf9;
+  /*
+   * Every text token clears WCAG AA (4.5:1) against the surface it sits on,
+   * including `--text-tertiary` on `--surface-subtle`, which is the worst case
+   * because it is small meta text on a hovered row.
+   */
+  --bg: #ffffff;
   --surface: #ffffff;
-  --surface-sunken: #f4f4f2;
-  --text: #18181b;
-  --text-muted: #6b6b76;
-  --text-faint: #9a9aa4;
-  --border: #e5e5e2;
-  --border-strong: #d3d3ce;
-  --grid-line: rgba(24, 24, 27, 0.05);
-  --shadow-sm: 0 1px 2px rgba(24, 24, 27, 0.05);
-  --shadow-md: 0 6px 24px -12px rgba(24, 24, 27, 0.28);
+  --surface-subtle: #fafafa;
+  --text: #111113;
+  --text-secondary: #55555f;
+  --text-tertiary: #72727b;
+  --border: #e7e7e9;
+  --border-strong: #d3d3d7;
 
   /*
    * Accent derivatives. `color-mix` pulls the configured accent toward black in
    * light mode and toward white in dark mode, so accent-coloured *text* keeps a
    * readable contrast ratio whatever hue the operator picks.
    */
-  --accent-text: color-mix(in srgb, var(--accent) 76%, #000000);
-  --accent-soft: color-mix(in srgb, var(--accent) 11%, transparent);
-  --accent-softer: color-mix(in srgb, var(--accent) 6%, transparent);
-  --accent-ring: color-mix(in srgb, var(--accent) 38%, transparent);
+  --accent-text: color-mix(in srgb, var(--accent) 82%, #000000);
+  --accent-line: color-mix(in srgb, var(--accent) 45%, transparent);
+  --accent-wash: color-mix(in srgb, var(--accent) 7%, transparent);
 
   color-scheme: light;
   accent-color: var(--accent);
@@ -41,22 +46,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #09090b;
-    --surface: #141417;
-    --surface-sunken: #101013;
-    --text: #f7f7f5;
-    --text-muted: #a1a1ab;
-    --text-faint: #71717c;
-    --border: #26262b;
-    --border-strong: #3a3a42;
-    --grid-line: rgba(250, 250, 250, 0.045);
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 8px 30px -14px rgba(0, 0, 0, 0.8);
+    --bg: #0a0a0b;
+    --surface: #0f0f11;
+    --surface-subtle: #141417;
+    --text: #f4f4f5;
+    --text-secondary: #a1a1aa;
+    --text-tertiary: #7d7d87;
+    --border: #232327;
+    --border-strong: #34343a;
 
-    --accent-text: color-mix(in srgb, var(--accent) 66%, #ffffff);
-    --accent-soft: color-mix(in srgb, var(--accent) 16%, transparent);
-    --accent-softer: color-mix(in srgb, var(--accent) 9%, transparent);
-    --accent-ring: color-mix(in srgb, var(--accent) 45%, transparent);
+    --accent-text: color-mix(in srgb, var(--accent) 62%, #ffffff);
+    --accent-line: color-mix(in srgb, var(--accent) 52%, transparent);
+    --accent-wash: color-mix(in srgb, var(--accent) 12%, transparent);
 
     color-scheme: dark;
   }
@@ -85,33 +86,6 @@ body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  isolation: isolate;
-}
-
-/* Fine engineering-paper grid, faded out toward the bottom of the viewport. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-  background-size: 56px 56px;
-  -webkit-mask-image: radial-gradient(ellipse 120% 70% at 50% 0%, #000 25%, transparent 78%);
-  mask-image: radial-gradient(ellipse 120% 70% at 50% 0%, #000 25%, transparent 78%);
-}
-
-/* A single restrained accent wash anchoring the top of the page. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0 0 auto 0;
-  height: 380px;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(ellipse 70% 100% at 50% 0%, var(--accent-soft), transparent 72%);
 }
 
 img,
@@ -129,18 +103,18 @@ h1,
 h2,
 h3 {
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
 :focus-visible {
   outline: 2px solid var(--accent-text);
-  outline-offset: 3px;
-  border-radius: 4px;
+  outline-offset: 2px;
+  border-radius: 3px;
 }
 
 ::selection {
-  background: var(--accent-soft);
+  background: var(--accent-wash);
 }
 
 /* Available to screen readers, removed from the visual layout. */

@@ -6,7 +6,7 @@
     "bio": "Backend engineer building reliable systems, useful developer tools, and small internet products.",
     "avatar": "/avatar.svg",
     "location": "Toronto, Canada",
-    "accent": "#7c3aed",
+    "accent": "#1d4ed8",
     "showBranding": true
   },
   "metadata": {
@@ -16,33 +16,28 @@
   "links": [
     {
       "slug": "projects",
-      "title": "See what I'm building",
-      "url": "https://example.com/projects",
-      "emoji": "🚀"
+      "title": "Selected projects",
+      "url": "https://example.com/projects"
     },
     {
       "slug": "github",
       "title": "GitHub",
-      "url": "https://github.com/example",
-      "emoji": "💻"
+      "url": "https://github.com/example"
     },
     {
       "slug": "writing",
-      "title": "Read my technical writing",
-      "url": "https://example.com/writing",
-      "emoji": "✍️"
+      "title": "Writing",
+      "url": "https://example.com/writing"
     },
     {
       "slug": "uses",
-      "title": "My tools and setup",
-      "url": "https://example.com/uses",
-      "emoji": "🛠️"
+      "title": "Tools and setup",
+      "url": "https://example.com/uses"
     },
     {
       "slug": "contact",
-      "title": "Send me an email",
-      "url": "mailto:hello@example.com",
-      "emoji": "👋"
+      "title": "Email",
+      "url": "mailto:hello@example.com"
     }
   ]
 }

@@ -33,28 +33,24 @@ export default function ProfilePage() {
 
       <div className={styles.shell}>
         <header className={styles.profile}>
-          <div className={styles.avatarFrame}>
-            {/*
-              A plain <img> with explicit dimensions: the avatar is a small local
-              asset, so next/image would add client JavaScript for no benefit.
-              Fixed width/height reserve the space and prevent layout shift.
-            */}
-            <img
-              className={styles.avatar}
-              src={profile.avatar}
-              alt={`Portrait of ${profile.name}`}
-              width={80}
-              height={80}
-              decoding="async"
-            />
+          {/*
+            A plain <img> with explicit dimensions: the avatar is a small local
+            asset, so next/image would add client JavaScript for no benefit.
+            Fixed width/height reserve the space and prevent layout shift.
+          */}
+          <img
+            className={styles.avatar}
+            src={profile.avatar}
+            alt={`Portrait of ${profile.name}`}
+            width={64}
+            height={64}
+            decoding="async"
+          />
+
+          <div className={styles.identity}>
+            <h1 className={styles.name}>{profile.name}</h1>
+            <p className={styles.handle}>{profile.handle}</p>
           </div>
-
-          <h1 className={styles.name}>{profile.name}</h1>
-
-          <p className={styles.handle}>
-            <span className={styles.handleDot} aria-hidden="true" />
-            {profile.handle}
-          </p>
 
           <p className={styles.bio}>{profile.bio}</p>
 

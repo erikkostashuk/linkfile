@@ -90,8 +90,12 @@ export default async function StatsPage() {
                   </h2>
                   <p className={styles.rowMeta}>
                     <code className={styles.slug}>/go/{row.slug}</code>
-                    <span aria-hidden="true">→</span>
-                    <span className={styles.destination}>{row.destination}</span>
+                    {/* Arrow and destination share one element so a narrow
+                        screen can never wrap them apart. */}
+                    <span className={styles.destination}>
+                      <span aria-hidden="true">&rarr;&nbsp;</span>
+                      {row.destination}
+                    </span>
                   </p>
                 </div>
                 <div className={styles.rowTotal}>

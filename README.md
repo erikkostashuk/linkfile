@@ -9,7 +9,7 @@
 Linkfile is an open-source link-in-bio page configured from one JSON file and deployable anywhere.
 
 [![CI](https://github.com/erikkostashuk/linkfile/actions/workflows/ci.yml/badge.svg)](https://github.com/erikkostashuk/linkfile/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-7c3aed.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-1d4ed8.svg)](LICENSE)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ferikkostashuk%2Flinkfile&env=NEXT_PUBLIC_SITE_URL,STATS_USERNAME,STATS_PASSWORD,CLICK_STORE,DATABASE_URL&envDescription=Public%20origin%2C%20%2Fstats%20credentials%20and%20click%20storage&envLink=https%3A%2F%2Fgithub.com%2Ferikkostashuk%2Flinkfile%23environment-variables&project-name=linkfile&repository-name=linkfile)
 
 </div>
@@ -33,7 +33,7 @@ wants a JSON file.
 
 | | |
 |---|---|
-| **Profile page** | Avatar, name, handle, bio, optional location and an ordered list of link cards |
+| **Profile page** | Avatar, name, handle, bio, optional location and an ordered list of link rows |
 | **Themes** | Automatic light and dark via `prefers-color-scheme`, themed by one accent colour |
 | **Validation** | Zod-checked config with a JSON Schema for editor autocomplete; a bad file fails the build |
 | **Click tracking** | First-party `/go/<slug>` redirects into a file log or PostgreSQL |
@@ -71,7 +71,7 @@ Everything on the page comes from `links.json`. Open it, change the values, save
     "bio": "Backend engineer building reliable systems, useful developer tools, and small internet products.",
     "avatar": "/avatar.svg",
     "location": "Toronto, Canada",
-    "accent": "#7c3aed",
+    "accent": "#1d4ed8",
     "showBranding": true
   },
   "metadata": {
@@ -79,9 +79,9 @@ Everything on the page comes from `links.json`. Open it, change the values, save
     "description": "Projects, writing, open-source work, and ways to reach Alex."
   },
   "links": [
-    { "slug": "projects", "title": "See what I'm building", "url": "https://example.com/projects", "emoji": "🚀" },
-    { "slug": "github", "title": "GitHub", "url": "https://github.com/example", "emoji": "💻" },
-    { "slug": "contact", "title": "Send me an email", "url": "mailto:hello@example.com", "emoji": "👋" }
+    { "slug": "projects", "title": "Selected projects", "url": "https://example.com/projects" },
+    { "slug": "github", "title": "GitHub", "url": "https://github.com/example" },
+    { "slug": "contact", "title": "Email", "url": "mailto:hello@example.com" }
   ]
 }
 ```
@@ -91,8 +91,9 @@ Everything on the page comes from `links.json`. Open it, change the values, save
 - **Order matters.** Links render in array order.
 - **Slugs are permanent-ish.** `slug` becomes `/go/<slug>` and is the key your click statistics are stored under.
   Renaming a slug starts its history over.
-- **The accent themes everything.** Focus rings, hover states, the emoji tiles, the favicon and the share image are all
-  derived from that one hex value, and text colours are contrast-corrected automatically.
+- **The accent is used sparingly.** Focus rings, the hover affordance, the statistics bars, the favicon and the share
+  image all derive from that one hex value, and text colours are contrast-corrected automatically so any hue stays
+  readable. Nothing else on the page is coloured.
 
 ### `links.json` reference
 
@@ -104,11 +105,11 @@ squiggles on mistakes before you ever run the app.
 | Field | Required | Description |
 |---|---|---|
 | `name` | yes | Display name, used as the page `<h1>` |
-| `handle` | yes | Short handle shown in the pill under your name, e.g. `@alexbuilds` |
+| `handle` | yes | Short handle shown in monospace under your name, e.g. `@alexbuilds` |
 | `bio` | yes | One or two sentences, up to 280 characters |
 | `avatar` | yes | Path inside `public/`, e.g. `/avatar.svg`. Any web image format works |
 | `location` | no | Shown with a pin icon under the bio |
-| `accent` | no | Hex colour (`#rgb`, `#rrggbb` or `#rrggbbaa`). Defaults to `#7c3aed` |
+| `accent` | no | Hex colour (`#rgb`, `#rrggbb` or `#rrggbbaa`). Defaults to `#1d4ed8` |
 | `showBranding` | no | Set `false` to hide the "Built with Linkfile" footer. Defaults to `true` |
 
 #### `metadata`
@@ -125,7 +126,7 @@ squiggles on mistakes before you ever run the app.
 | `slug` | yes | Lowercase, hyphen-separated, unique. Becomes `/go/<slug>` |
 | `title` | yes | The button label |
 | `url` | yes | Absolute destination. Only `https:`, `http:` and `mailto:` are allowed |
-| `emoji` | no | Decorative emoji shown in the tile before the title |
+| `emoji` | no | Decorative emoji shown before the title, e.g. `"emoji": "🚀"`. Omitted from the shipped example for a plainer default |
 
 ### Validation
 
@@ -137,7 +138,7 @@ Invalid Linkfile configuration in links.json:
   • links[1].slug: duplicate slug "github" — already used by links[0]. Every slug must be
     unique because it identifies the link in /go/<slug> and in click statistics.
   • links[2].url: protocol "javascript:" is not allowed. Use one of: https:, http:, mailto:
-  • profile.accent: profile.accent must be a hex colour such as "#7c3aed"
+  • profile.accent: profile.accent must be a hex colour such as "#1d4ed8"
 
 Fix the file and save — the schema is documented in links.schema.json.
 ```
@@ -391,7 +392,7 @@ src/
   app/
     page.tsx             profile page (Server Component, no client JS)
     layout.tsx           metadata, Open Graph, accent CSS variables
-    globals.css          design tokens, themes, grid texture
+    globals.css          design tokens and themes
     go/[slug]/route.ts   tracked redirect
     stats/page.tsx       password-protected statistics
     api/health/route.ts  health check for monitors and containers
